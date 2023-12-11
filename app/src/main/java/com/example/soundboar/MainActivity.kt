@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var addSoundButton: Button
     private lateinit var layout: LinearLayout // Remplacez avec l'ID de votre LinearLayout
-
     companion object {
         private const val REQUEST_CODE_PICK_AUDIO = 1
         private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2
@@ -26,17 +25,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        layout = findViewById(R.id.yourLayoutId) // Remplacez avec l'ID de votre LinearLayout
+        //layout = findViewById(R.id.activity_main) // Remplacez avec l'ID de votre LinearLayout
 
-        val buttonSound1 = findViewById<Button>(R.id.soundButton1)
-        val buttonSound2 = findViewById<Button>(R.id.soundButton2)
-        val buttonSound3 = findViewById<Button>(R.id.soundButton3)
-        val buttonSound4 = findViewById<Button>(R.id.soundButton4)
+        val buttonSound1 = findViewById<Button>(R.id.button1)
+        val buttonSound2 = findViewById<Button>(R.id.button2)
+        val buttonSound3 = findViewById<Button>(R.id.button3)
+        val buttonSound4 = findViewById<Button>(R.id.button4)
 
         buttonSound1.setOnClickListener { playSound(R.raw.sound1) }
         buttonSound2.setOnClickListener { playSound(R.raw.sound2) }
-        buttonSound3.setOnClickListener { playSound(R.raw.sound3) }
-        buttonSound4.setOnClickListener { playSound(R.raw.sound4) }
+       // buttonSound3.setOnClickListener { playSound(R.raw.sound3) }
+        //buttonSound4.setOnClickListener { playSound(R.raw.sound4) }
 
         addSoundButton = findViewById(R.id.addSoundButton)
         addSoundButton.setOnClickListener {
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun superonRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
