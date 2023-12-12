@@ -4,4 +4,10 @@
     <string name="sound_2">Sound 2</string>
     <string name="sound_3">Sound 3</string>
     <string name="sound_4">Sound 4</string>
+    <string name="logo_soundboar">Logo SoundBoar</string>
+    <string name="logo_add">Logo Add +</string>
+    <string name="bouton_3">Bouton 3</string>
+    <string name="bouton_2">Bouton 2</string>
+    <string name="bouton_1">Bouton 1</string>
+    <string name="bouton_4">Bouton 4</string>
 </resources>

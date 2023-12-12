@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton // Import ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -20,7 +21,7 @@ import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
-    private lateinit var addSoundButton: Button
+    private lateinit var addSoundButton: ImageButton // Change to ImageButton
     private lateinit var layout: LinearLayout
     private lateinit var sharedPrefs: SharedPreferences
 
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         private const val MY_PERMISSIONS_REQUEST = 2
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,10 +45,10 @@ class MainActivity : AppCompatActivity() {
 
         buttonSound1.setOnClickListener { playSound(R.raw.sound1) }
         buttonSound2.setOnClickListener { playSound(R.raw.sound2) }
-       // buttonSound3.setOnClickListener { playSound(R.raw.sound3) }
+        //buttonSound3.setOnClickListener { playSound(R.raw.sound3) }
         //buttonSound4.setOnClickListener { playSound(R.raw.sound4) }
 
-        addSoundButton = findViewById(R.id.addSoundButton)
+        addSoundButton = findViewById(R.id.addSoundButton) // Correctly cast to ImageButton
         addSoundButton.setOnClickListener {
             requestAudioPermissions()
         }
