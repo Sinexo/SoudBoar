@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SoundBoar</string>
+    <string name="sound_1">Sound 1</string>
+    <string name="sound_2">Sound 2</string>
+    <string name="sound_3">Sound 3</string>
+    <string name="sound_4">Sound 4</string>
+    <string name="logo_soundboar">Logo SoundBoar</string>
+    <string name="logo_add">Logo Add +</string>
+    <string name="son_1">Son 1</string>
+    <string name="son_2">Son 2</string>
+    <string name="son_3">Son 3</string>
+    <string name="son_4">Son 4</string>
+
+
+</resources>

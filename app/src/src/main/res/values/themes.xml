@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    </style>
+    <style name="GridButton">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+    <dimen name="grid_button_size">100dp</dimen>
+    <dimen name="grid_button_margin">10dp</dimen>
+    <dimen name="grid_width">100dp</dimen>
+    <dimen name="grid_height">100dp</dimen>
+</resources>
