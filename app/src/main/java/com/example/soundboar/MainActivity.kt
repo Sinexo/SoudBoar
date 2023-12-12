@@ -2,21 +2,27 @@ package com.example.soundboar
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import java.io.File
+import java.io.FileOutputStream
 
 class MainActivity : AppCompatActivity() {
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var addSoundButton: Button
     private lateinit var layout: LinearLayout
+    private lateinit var sharedPrefs: SharedPreferences
 
     companion object {
         private const val REQUEST_CODE_PICK_AUDIO = 1
@@ -27,7 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        layout = findViewById(R.id.Llayout) // Assurez-vous que 'R.id.layout' correspond à l'ID de votre LinearLayout dans le fichier XML.
+        layout = findViewById(R.id.Llayout)
+        sharedPrefs = getSharedPreferences("SoundboardPrefs", MODE_PRIVATE)
 
         val buttonSound1 = findViewById<Button>(R.id.button1)
         val buttonSound2 = findViewById<Button>(R.id.button2)
@@ -43,8 +50,11 @@ class MainActivity : AppCompatActivity() {
         addSoundButton.setOnClickListener {
             requestAudioPermissions()
         }
+
+        loadSavedAudioUris()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestAudioPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO)
             != PackageManager.PERMISSION_GRANTED) {
@@ -72,13 +82,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun createSoundButton(soundUri: Uri) {
+    private fun createSoundButton(audioPath: String) {
         val newButton = Button(this).apply {
-            text = soundUri.lastPathSegment
+            text = File(audioPath).name
             setOnClickListener {
                 stopAndReleaseMediaPlayer()
 
-                mediaPlayer = MediaPlayer.create(context, soundUri)
+                mediaPlayer = MediaPlayer.create(context, Uri.parse(audioPath))
                 mediaPlayer?.start()
                 mediaPlayer?.setOnCompletionListener {
                     stopAndReleaseMediaPlayer()
@@ -87,6 +97,39 @@ class MainActivity : AppCompatActivity() {
         }
 
         layout.addView(newButton)
+    }
+
+    private fun saveAudioUri(uri: Uri) {
+        val audioPath = copyFileToInternalStorage(uri)
+        audioPath?.let {
+            val editor = sharedPrefs.edit()
+            editor.putString(it, it)
+            editor.apply()
+
+            createSoundButton(it)
+        }
+    }
+
+    private fun copyFileToInternalStorage(uri: Uri): String? {
+        val inputStream = contentResolver.openInputStream(uri)
+        val fileName = File(uri.path ?: "").name
+        val outputFile = File(filesDir, fileName)
+        val outputStream = FileOutputStream(outputFile)
+
+        inputStream?.use { input ->
+            outputStream.use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        return outputFile.absolutePath
+    }
+
+    private fun loadSavedAudioUris() {
+        val allUris = sharedPrefs.all
+        for (entry in allUris.entries) {
+            createSoundButton(entry.value.toString())
+        }
     }
 
     private fun stopAndReleaseMediaPlayer() {
@@ -99,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_CODE_PICK_AUDIO && resultCode == RESULT_OK) {
             data?.data?.also { uri ->
-                createSoundButton(uri)
+                saveAudioUri(uri)
             }
         }
     }
