@@ -8,24 +8,26 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
     private lateinit var addSoundButton: Button
-    private lateinit var layout: LinearLayout // Remplacez avec l'ID de votre LinearLayout
+    private lateinit var layout: LinearLayout
+
     companion object {
         private const val REQUEST_CODE_PICK_AUDIO = 1
-        private const val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2
+        private const val MY_PERMISSIONS_REQUEST = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //layout = findViewById(R.id.activity_main) // Remplacez avec l'ID de votre LinearLayout
+        layout = findViewById(R.id.Llayout) // Assurez-vous que 'R.id.layout' correspond à l'ID de votre LinearLayout dans le fichier XML.
 
         val buttonSound1 = findViewById<Button>(R.id.button1)
         val buttonSound2 = findViewById<Button>(R.id.button2)
@@ -39,14 +41,18 @@ class MainActivity : AppCompatActivity() {
 
         addSoundButton = findViewById(R.id.addSoundButton)
         addSoundButton.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
-            } else {
-                openAudioPicker()
-            }
+            requestAudioPermissions()
+        }
+    }
+
+    private fun requestAudioPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.READ_MEDIA_AUDIO),
+                MY_PERMISSIONS_REQUEST)
+        } else {
+            openAudioPicker()
         }
     }
 
@@ -57,36 +63,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun playSound(soundResourceId: Int) {
-        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
-            mediaPlayer.stop()
-            mediaPlayer.release()
-        }
+        stopAndReleaseMediaPlayer()
 
         mediaPlayer = MediaPlayer.create(this, soundResourceId)
-        mediaPlayer.start()
-        mediaPlayer.setOnCompletionListener {
-            it.release()
+        mediaPlayer?.start()
+        mediaPlayer?.setOnCompletionListener {
+            stopAndReleaseMediaPlayer()
         }
     }
 
     private fun createSoundButton(soundUri: Uri) {
         val newButton = Button(this).apply {
-            text = soundUri.lastPathSegment // Vous pouvez personnaliser le texte du bouton ici
+            text = soundUri.lastPathSegment
             setOnClickListener {
-                if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
-                    mediaPlayer.stop()
-                    mediaPlayer.release()
-                }
+                stopAndReleaseMediaPlayer()
 
                 mediaPlayer = MediaPlayer.create(context, soundUri)
-                mediaPlayer.start()
-                mediaPlayer.setOnCompletionListener {
-                    it.release()
+                mediaPlayer?.start()
+                mediaPlayer?.setOnCompletionListener {
+                    stopAndReleaseMediaPlayer()
                 }
             }
         }
 
         layout.addView(newButton)
+    }
+
+    private fun stopAndReleaseMediaPlayer() {
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -99,22 +104,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun superonRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    openAudioPicker()
-                } else {
-                    // Handle the case where the user denies the permission.
-                }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == MY_PERMISSIONS_REQUEST) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                openAudioPicker()
+            } else {
+                Toast.makeText(this, "CHOCKBAR les permission audio sont refusée ???", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::mediaPlayer.isInitialized) {
-            mediaPlayer.release()
-        }
+        stopAndReleaseMediaPlayer()
     }
 }
